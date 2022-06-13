@@ -1,6 +1,5 @@
 from collections import defaultdict
 import importlib
-from importlib.metadata import version
 import json
 import logging
 from pathlib import Path
@@ -17,7 +16,7 @@ def getversion(module):
             try:
                 return module.version()
             except AttributeError:
-                return version(module)
+                raise
 
 
 logging.basicConfig(
@@ -37,7 +36,7 @@ def get_module_versions():
                 module_name, *_ = module_name.rsplit("-", maxsplit=2)
             try:
                 module = importlib.import_module(module_name)
-            except ImportError as e:
+            except (ImportError, TypeError) as e:
                 logging.warning("Skipped: '%s' Error was '%s'", str(module_name), str(e))
             else:
                 try:
